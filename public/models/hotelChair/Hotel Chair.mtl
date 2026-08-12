@@ -1,0 +1,28 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 24.01.2016 17:23:56
+
+newmtl Material_0000c1
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 1.0000 1.0000 1.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka classic_hotel_chair.png
+	map_Kd classic_hotel_chair.png
+	map_bump classic_hotel_chair_n.png
+	bump classic_hotel_chair_n.png
+
+newmtl wire_028089177
+	Ns 32
+	d 1
+	Tr 0
+	Tf 1 1 1
+	illum 2
+	Ka 0.1098 0.3490 0.6941
+	Kd 0.1098 0.3490 0.6941
+	Ks 0.3500 0.3500 0.3500

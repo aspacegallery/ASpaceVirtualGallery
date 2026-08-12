@@ -1,0 +1,35 @@
+# Blender MTL File: 'None'
+# Material Count: 3
+
+newmtl bayomat0
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd bottle4_tex.png
+map_d bottle4_tex.png
+
+newmtl bayomat0_bottle4_tex.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd bottle4_tex.png
+map_d bottle4_tex.png
+
+newmtl bayomat0_bottle4_tex.png.002
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.512000 0.512000 0.512000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd bottle4_tex.png
+map_d bottle4_tex.png

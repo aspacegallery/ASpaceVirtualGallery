@@ -1,0 +1,4 @@
+# Git LFS removed - all assets committed as regular files
+*.glb !text !filter !merge !diff
+*.jpg !text !filter !merge !diff
+*.png !text !filter !merge !diff
