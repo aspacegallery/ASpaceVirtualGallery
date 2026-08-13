@@ -23,6 +23,11 @@ function ConstructionOverlay() {
   return (
     <div id="construction-overlay">
       <p>A Space Virtual Gallery is under construction...</p>
+      <p>
+        <a href="https://aspacevirtualarchive.vercel.app/" target="_blank" rel="noopener noreferrer">
+          Visit A Space Virtual Archive to see artists selected from our past exhibitions
+        </a>
+      </p>
     </div>
   );
 }

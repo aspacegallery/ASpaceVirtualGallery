@@ -361,11 +361,18 @@ canvas {
   font-family: 'PixelPurl', sans-serif;
   font-size: 4em;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   z-index: 99999;
   text-shadow: 0 0 12px #ffffff;
+}
+
+#construction-overlay a {
+  color: inherit;
+  text-decoration: underline;
+  font-size: 0.5em;
 }
 
 #music-toggle {
