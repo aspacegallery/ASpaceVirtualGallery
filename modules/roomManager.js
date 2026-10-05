@@ -75,8 +75,8 @@ export function createMultiRoomSetup(scene, textureLoader, config) {
   scene.add(doorwayGroup);
   const doorwayWallGroups = [doorwayGroup];
 
-  const wallColorTexture = textureLoader.load("wallTexture/paperWall/tex.jpg");
-  const wallNormalTexture = textureLoader.load("wallTexture/paperWall/normal.jpeg");
+  const wallColorTexture = textureLoader.load("wallTexture/metal/Metal009_1K-JPG_Color.jpg");
+  const wallNormalTexture = textureLoader.load("wallTexture/metal/Metal009_1K-JPG_NormalGL.jpg");
   const wallHeight = 20;
   const wallThickness = 0.005;
 
@@ -211,7 +211,7 @@ export function createMultiRoomSetup(scene, textureLoader, config) {
 }
 
 /**
- * Build free-standing interior walls from specs (paperWall texture, double-sided).
+ * Build free-standing interior walls from specs (metal/Metal009 texture, double-sided).
  * Each spec: { center:{x,z}, length, height, thickness, axis:'x'|'z' }
  * Sits on the floor at y = -Math.PI.
  * @private
@@ -221,8 +221,8 @@ function createStandaloneWalls(scene, textureLoader, wallSpecs = []) {
   scene.add(group);
 
   const floorY = -Math.PI;
-  const colorTexture = textureLoader.load("wallTexture/paperWall/tex.jpg");
-  const normalTexture = textureLoader.load("wallTexture/paperWall/normal.jpeg");
+  const colorTexture = textureLoader.load("wallTexture/metal/Metal009_1K-JPG_Color.jpg");
+  const normalTexture = textureLoader.load("wallTexture/metal/Metal009_1K-JPG_NormalGL.jpg");
 
   const D = WALL_TEX_REPEAT_DIVISOR;
   const doubleSided = (mat) => { mat.side = THREE.DoubleSide; return mat; };
@@ -594,7 +594,7 @@ function makeWallMaterial(colorTexture, normalTexture, repeatX, repeatY) {
   return new THREE.MeshStandardMaterial({
     map: colorTex,
     normalMap: normalTex,
-    metalness: 0,
+    metalness: 0.5,
     roughness: WALL_SCALAR_ROUGHNESS,
     side: THREE.FrontSide,
   });
@@ -695,10 +695,10 @@ function calculateCombinedBounds(rooms) {
 function createCombinedFloorCeiling(scene, textureLoader, bounds) {
   const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-  // ====== FLOOR (carpet: Color + NormalGL) ======
-  const carpetBase = "floorTexture/carpet/Carpet016_1K-JPG";
-  const floorColorTexture = textureLoader.load(`${carpetBase}_Color.jpg`);
-  const floorNormalTexture = textureLoader.load(`${carpetBase}_NormalGL.jpg`);
+  // ====== FLOOR (rock: Color + NormalGL only; Roughness/AO/Displacement maps omitted for perf) ======
+  const floorBase = "floorTexture/rock/Rock063_1K-JPG";
+  const floorColorTexture = textureLoader.load(`${floorBase}_Color.jpg`);
+  const floorNormalTexture = textureLoader.load(`${floorBase}_NormalGL.jpg`);
 
   const floorRepeatX = bounds.width / FLOOR_TEX_TILE_WORLD_UNITS;
   const floorRepeatY = bounds.depth / FLOOR_TEX_TILE_WORLD_UNITS;
@@ -728,39 +728,10 @@ function createCombinedFloorCeiling(scene, textureLoader, bounds) {
   floor.position.set(bounds.centerX, -Math.PI, bounds.centerZ);
   scene.add(floor);
 
-  // ====== CEILING (backroom) ======
-  const ceilingBase = "ceilingTexture/backroom/OfficeCeiling002_1K-JPG";
-  const ceilingColorTexture = textureLoader.load(`${ceilingBase}_Color.jpg`);
-  const ceilingEmissionTexture = textureLoader.load(`${ceilingBase}_Emission.jpg`);
+  // ====== CEILING removed — rooms are now open to the HDRI sky
+  // (scene.background / scene.environment set by loadHDRIEnvironment).
+  // To restore the old backroom ceiling, recreate a PlaneGeometry mesh with the
+  // ceilingTexture/backroom maps here and return it below.
 
-  const ceilingRepeatX = bounds.width / CEILING_TEX_TILE_WORLD_UNITS;
-  const ceilingRepeatY = bounds.depth / CEILING_TEX_TILE_WORLD_UNITS;
-
-  [ceilingColorTexture, ceilingEmissionTexture].forEach((tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(ceilingRepeatX, ceilingRepeatY);
-    tex.generateMipmaps = true;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
-    tex.magFilter = THREE.LinearFilter;
-    tex.anisotropy = isMobile ? 1 : 2;
-  });
-  ceilingColorTexture.colorSpace = THREE.SRGBColorSpace;
-  ceilingEmissionTexture.colorSpace = THREE.SRGBColorSpace;
-
-  const ceilingGeometry = new THREE.PlaneGeometry(bounds.width, bounds.depth);
-  const ceilingMaterial = new THREE.MeshStandardMaterial({
-    map: ceilingColorTexture,
-    emissiveMap: ceilingEmissionTexture,
-    emissive: 0xffffff,
-    emissiveIntensity: 2,
-    metalness: 0.0,
-    roughness: 1.0,
-    side: THREE.FrontSide,
-  });
-  const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-  ceiling.rotation.x = Math.PI / 2;
-  ceiling.position.set(bounds.centerX, 10, bounds.centerZ);
-  scene.add(ceiling);
-
-  return { floor, ceiling };
+  return { floor, ceiling: null };
 }

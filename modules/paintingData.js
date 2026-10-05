@@ -81,7 +81,7 @@ export async function loadPaintingData(roomConfig) {
     const artworksByRoomAndWall = {};
     
     artworks.forEach((artwork, i) => {
-      // Calculate dimensions based on artwork.dimension
+      // Calculate dimensions based on artwork.sceneDimension
       let width = 5;
       let height = 3;
       let depth = 0.1;
@@ -92,8 +92,8 @@ export async function loadPaintingData(roomConfig) {
         ? artwork.sceneScale
         : 1;
 
-      if (artwork.dimension) {
-        const dims = artwork.dimension.match(/(\d+\.?\d*)\s*x\s*(\d+\.?\d*)/);
+      if (artwork.sceneDimension) {
+        const dims = artwork.sceneDimension.match(/(\d+\.?\d*)\s*x\s*(\d+\.?\d*)/);
         if (dims) {
           const h = parseFloat(dims[1]);
           const w = parseFloat(dims[2]);
@@ -264,7 +264,7 @@ export async function loadPaintingData(roomConfig) {
           description: artData.artwork.description,
           date: artData.artwork.date,
           medium: artData.artwork.medium,
-          dimension: artData.artwork.dimension,
+          realDimension: artData.artwork.realDimension,
           category: artData.artwork.category.join(', '),
           link: artData.artwork.link || '',
         };
@@ -459,8 +459,8 @@ export async function getWallReserves() {
         : 1;
       let w = 5;
       let h = 3;
-      if (art.dimension) {
-        const dims = art.dimension.match(/(\d+\.?\d*)\s*x\s*(\d+\.?\d*)/);
+      if (art.sceneDimension) {
+        const dims = art.sceneDimension.match(/(\d+\.?\d*)\s*x\s*(\d+\.?\d*)/);
         if (dims) {
           h = parseFloat(dims[1]);
           w = parseFloat(dims[2]);

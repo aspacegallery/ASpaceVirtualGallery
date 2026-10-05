@@ -15,14 +15,14 @@ export function setupBackgroundMusic(camera) {
 
   // Load the audio file
   const audioLoader = new THREE.AudioLoader();
-  const audioPath = '/sounds/music/Backroom.mp3';
+  const audioPath = '/sounds/music/YumeNikkiSnowWorldslowed.mp3';
   
   audioLoader.load(
     audioPath,
     function (buffer) {
       sound.setBuffer(buffer);
       sound.setLoop(true); // Loop the audio
-      sound.setVolume(0.7); // Set volume to 10%
+      sound.setVolume(0.4); // Set volume to 10%
     }
   );
 

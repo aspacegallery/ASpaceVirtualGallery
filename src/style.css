@@ -208,13 +208,13 @@ canvas {
 }
 
 #painting-info p {
-  color: #000000;
+  color: #ffffff;
   font-size: 1.7em;
   line-height: 0.9em;
 }
 
 #painting-info strong {
-  color: #000000;
+  color: #ffffff;
   font-weight: bold;
   font-size: 1.1em;
 }

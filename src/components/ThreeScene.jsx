@@ -15,7 +15,7 @@ import { initializeControls } from '../../modules/controlsManager.js';
 import { createMultiRoomSetup } from '../../modules/roomManager.js';
 import { generateRoomLayout, generateStandaloneWalls } from '../../modules/roomGenerator.js';
 import { getGridWalls, getWallReserves } from '../../modules/paintingData.js';
-// import { loadHDRIEnvironment } from '../../modules/hdriEnvironment.js';
+import { loadHDRIEnvironment } from '../../modules/hdriEnvironment.js';
 
 function ThreeScene({ onControlsReady, onAudioReady, onSceneReady, onReady }) {
   const mountRef = useRef(null);
@@ -31,7 +31,9 @@ function ThreeScene({ onControlsReady, onAudioReady, onSceneReady, onReady }) {
       try {
         let { camera, controls, renderer } = setupScene();
 
-        // loadHDRIEnvironment(scene, renderer);
+        // Load nightEnvironment HDRI as sky background + image-based lighting
+        // (also what makes the metal walls reflect/look metallic).
+        loadHDRIEnvironment(scene, renderer);
 
         // Pass controls back to parent
         if (onControlsReady) {
@@ -69,7 +71,9 @@ function ThreeScene({ onControlsReady, onAudioReady, onSceneReady, onReady }) {
 
         const { rooms: generatedRooms, doorways: generatedDoorways } = generateRoomLayout({
           baseRoom: mainRoom,
-          numNewRooms: 4,
+          // Total rooms = 1 base + numNewRooms. Set to 2 for a 3-room show.
+          // Original value was 4 (5 rooms total) — change back to restore.
+          numNewRooms: 2,
           minGap: 3,
           maxGap: 20,
           // room2 hosts a wide zine grid (~24 units), so lock it to the max size.
@@ -155,16 +159,19 @@ function ThreeScene({ onControlsReady, onAudioReady, onSceneReady, onReady }) {
         // spawner won't drop pieces on top of them. Rectangles in front of
         // every painting (width of painting × 10 units into the room) keep
         // artwork sightlines clear.
-        spawnRoomFurniture(scene, roomConfig.rooms, {
-          wallMargin: 0,
-          preOccupied: [
-            { x: -15, z: 5,   r: 5 },  // rocking horse
-            { x: 37,  z: -16, r: 5 },  // statue
-            { x: -39, z: -19, r: 2 },  // fire extinguisher
-            { x: 36,  z: -17, r: 3 },  // wine bottles
-          ],
-          avoidRects: computePaintingExclusionRects(paintings, 10),
-        });
+        // NOTE: Random "glitch" furniture spawner disabled for now. Kept here
+        // (and the roomFurniture import) so it can be re-enabled later by
+        // uncommenting this block.
+        // spawnRoomFurniture(scene, roomConfig.rooms, {
+        //   wallMargin: 0,
+        //   preOccupied: [
+        //     { x: -15, z: 5,   r: 5 },  // rocking horse
+        //     { x: 37,  z: -16, r: 5 },  // statue
+        //     { x: -39, z: -19, r: 2 },  // fire extinguisher
+        //     { x: 36,  z: -17, r: 3 },  // wine bottles
+        //   ],
+        //   avoidRects: computePaintingExclusionRects(paintings, 10),
+        // });
 
         setupRendering(scene, camera, renderer, paintings, controls, walls, floor, models, audio);
 

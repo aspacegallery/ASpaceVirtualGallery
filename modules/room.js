@@ -1,16 +1,17 @@
 import * as THREE from "three";
 
-/** Floor texture repeat divisor: repeat = size/divisor → each full texture tile spans divisor world units along X and Z */
-export const FLOOR_TEX_TILE_WORLD_UNITS = 10;
+/** Floor texture repeat divisor: repeat = size/divisor → each full texture tile spans divisor world units along X and Z. Larger = bigger tiles = less dense/repetitive. */
+export const FLOOR_TEX_TILE_WORLD_UNITS = 20;
 /** Ceiling texture repeat divisor */
 export const CEILING_TEX_TILE_WORLD_UNITS = 30;
 /** Diamond plate floor: scalar PBR when roughness/metalness maps are omitted */
 export const FLOOR_SCALAR_ROUGHNESS = 0.92;
 export const FLOOR_SCALAR_METALNESS = 0.25;
-/** Wall UV repeat = wallSize/divisor → one texture spans ~DIVISOR world units along each edge */
-export const WALL_TEX_REPEAT_DIVISOR = 7;
-/** Walls: single Color map only — scalar roughness (no normal/AO/roughness/displacement maps) */
-export const WALL_SCALAR_ROUGHNESS = 0.82;
+/** Wall UV repeat = wallSize/divisor → one texture spans ~DIVISOR world units along each edge. Larger = bigger tiles = less dense/repetitive. */
+export const WALL_TEX_REPEAT_DIVISOR = 14;
+/** Walls: scalar roughness. LOWER = sharper/stronger reflections (mirror-like),
+ *  HIGHER = matte/blurred. ~0.1–0.3 gives visibly reflective metal. */
+export const WALL_SCALAR_ROUGHNESS = 0.2;
 
 /**
  * Creates a complete room with walls, floor, and ceiling.
@@ -43,9 +44,11 @@ export function createRoom(scene, textureLoader, config = {}) {
   // ====== WALLS ======
   const wallThickness = 0.005;
 
-  // Walls: paperWall color + normal
-  const wallColorTexture = textureLoader.load("wallTexture/paperWall/tex.jpg");
-  const wallNormalTexture = textureLoader.load("wallTexture/paperWall/normal.jpeg");
+  // Walls: metal/Metal009 color + normal (scalar metalness=1 enabled;
+  // roughness scalar, AO/metalness/roughness/displacement maps omitted for performance)
+  const wallBase = "wallTexture/metal/Metal009_1K-JPG";
+  const wallColorTexture = textureLoader.load(`${wallBase}_Color.jpg`);
+  const wallNormalTexture = textureLoader.load(`${wallBase}_NormalGL.jpg`);
 
   const wallRepeatX = width / WALL_TEX_REPEAT_DIVISOR;
   const wallRepeatY = height / WALL_TEX_REPEAT_DIVISOR;
@@ -66,7 +69,7 @@ export function createRoom(scene, textureLoader, config = {}) {
   const wallMaterial = new THREE.MeshStandardMaterial({
     map: wallColorTexture,
     normalMap: wallNormalTexture,
-    metalness: 0,
+    metalness: 0.5,
     roughness: WALL_SCALAR_ROUGHNESS,
     side: THREE.FrontSide,
   });
@@ -87,7 +90,7 @@ export function createRoom(scene, textureLoader, config = {}) {
       sideMat: new THREE.MeshStandardMaterial({
         map: c,
         normalMap: n,
-        metalness: 0,
+        metalness: 0.5,
         roughness: WALL_SCALAR_ROUGHNESS,
         side: THREE.FrontSide,
       }),
@@ -120,10 +123,10 @@ export function createRoom(scene, textureLoader, config = {}) {
   rightWall.position.x = width / 2;
   roomGroup.add(rightWall);
 
-  // ====== FLOOR (carpet: Color + NormalGL) ======
-  const carpetBase = "floorTexture/carpet/Carpet016_1K-JPG";
-  const floorColorTexture = textureLoader.load(`${carpetBase}_Color.jpg`);
-  const floorNormalTexture = textureLoader.load(`${carpetBase}_NormalGL.jpg`);
+  // ====== FLOOR (rock: Color + NormalGL only; Roughness/AO/Displacement maps omitted for perf) ======
+  const floorBase = "floorTexture/rock/Rock063_1K-JPG";
+  const floorColorTexture = textureLoader.load(`${floorBase}_Color.jpg`);
+  const floorNormalTexture = textureLoader.load(`${floorBase}_NormalGL.jpg`);
 
   const floorRepeatX = width / FLOOR_TEX_TILE_WORLD_UNITS;
   const floorRepeatY = depth / FLOOR_TEX_TILE_WORLD_UNITS;
@@ -153,45 +156,15 @@ export function createRoom(scene, textureLoader, config = {}) {
   floor.position.y = -Math.PI; // Match old floor position
   roomGroup.add(floor);
 
-  // ====== CEILING (backroom) ======
-  const ceilingBase = "ceilingTexture/backroom/OfficeCeiling002_1K-JPG";
-  const ceilingColorTexture = textureLoader.load(`${ceilingBase}_Color.jpg`);
-  const ceilingEmissionTexture = textureLoader.load(`${ceilingBase}_Emission.jpg`);
-
-  const ceilingRepeatX = width / CEILING_TEX_TILE_WORLD_UNITS;
-  const ceilingRepeatY = depth / CEILING_TEX_TILE_WORLD_UNITS;
-
-  [ceilingColorTexture, ceilingEmissionTexture].forEach((tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(ceilingRepeatX, ceilingRepeatY);
-    tex.generateMipmaps = true;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
-    tex.magFilter = THREE.LinearFilter;
-    tex.anisotropy = isMobile ? 1 : 2;
-  });
-  ceilingColorTexture.colorSpace = THREE.SRGBColorSpace;
-  ceilingEmissionTexture.colorSpace = THREE.SRGBColorSpace;
-
-  const ceilingGeometry = new THREE.PlaneGeometry(width, depth);
-  const ceilingMaterial = new THREE.MeshStandardMaterial({
-    map: ceilingColorTexture,
-    emissiveMap: ceilingEmissionTexture,
-    emissive: 0xffffff,
-    emissiveIntensity: 1.5,
-    metalness: 0.0,
-    roughness: 1.0,
-    side: THREE.FrontSide,
-  });
-  const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-  ceiling.rotation.x = Math.PI / 2;
-  ceiling.position.y = 10;
-  roomGroup.add(ceiling);
+  // ====== CEILING removed — rooms are open to the HDRI sky.
+  // (Previously a backroom ceiling plane was created here and then replaced by
+  // the combined ceiling in roomManager; both are now gone.)
 
   // Return components for further manipulation
   return {
     group: roomGroup,
     walls: { front: frontWall, back: backWall, left: leftWall, right: rightWall },
     floor: floor,
-    ceiling: ceiling
+    ceiling: null
   };
 }

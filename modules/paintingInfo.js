@@ -12,7 +12,7 @@ export const displayPaintingInfo = (info) => {
     <p><strong>Artist:</strong> ${info.artist}</p>
     ${info.date ? `<p><strong>Date:</strong> ${info.date}</p>` : ''}
     ${info.medium ? `<p><strong>Medium:</strong> ${info.medium}</p>` : ''}
-    ${info.dimension ? `<p><strong>Dimension:</strong> ${info.dimension}</p>` : ''}
+    ${info.realDimension ? `<p><strong>Dimension:</strong> ${info.realDimension}</p>` : ''}
     <p><strong>Description:</strong> ${info.description}</p>
   `;
 
